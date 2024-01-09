@@ -5,11 +5,20 @@ import { useRouter } from "next/router"
 import { Fragment } from "react"
 import EventLogistics from "@/components/events/event-logistics"
 import ErrorAlert from "@/components/ui/error-alert"
+import EventsService from "../api/events"
 
-function EventDetailPage() {
-    const { query } = useRouter()
+export async function getServerSideProps(context) {
+    const { query } = context
     const { eventId } = query
-    const event = getEventById(eventId)
+    return {
+        props: {
+            event: await new EventsService().getEventById(eventId)
+        }
+    }
+}
+
+function EventDetailPage({ event }) {
+
     if (!event) {
         return <ErrorAlert><p>No event found</p></ErrorAlert>
     }

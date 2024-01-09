@@ -3,9 +3,17 @@ import EventsSearch from "@/components/events/events-search"
 import { getAllEvents } from "@/dummy-data"
 import { useRouter } from "next/router"
 import { Fragment } from "react"
+import EventsService from "../api/events"
 
-function AllEventsPage() {
-    const events = getAllEvents()
+export async function getStaticProps() {
+    return {
+        props: { events: await new EventsService().getAllEvents() },
+        revalidate: 10
+    }
+}
+
+function AllEventsPage({ events }) {
+
     const router = useRouter()
     function findEventsHandler(year, month) {
         const fullPath = `/events/${year}/${month}`

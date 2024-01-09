@@ -5,8 +5,26 @@ import ErrorAlert from "@/components/ui/error-alert"
 import { getFilteredEvents } from "@/dummy-data"
 import { useRouter } from "next/router"
 import { Fragment } from "react"
+import EventsService from "../api/events"
 
-function FilteredEventsPage() {
+
+export async function getServerSideProps(context) {
+    const { query } = context
+    const filteredData = query.slug
+    const [filterdYear, filteredMonth] = filteredData
+    const numYear = +filterdYear
+    const numMonth = +filteredMonth
+    return {
+        props: {
+            filteredEvents: await new EventsService().getFilteredEvents({
+                year: numYear,
+                month: numMonth
+            })
+        }
+    }
+}
+
+function FilteredEventsPage({ filteredEvents }) {
     const { query } = useRouter()
     const filteredData = query.slug
     if (!filteredData) {
@@ -23,10 +41,7 @@ function FilteredEventsPage() {
             </div>
         </Fragment>
     }
-    const filteredEvents = getFilteredEvents({
-        year: numYear,
-        month: numMonth
-    })
+
 
     if (!filteredEvents || filteredEvents.length === 0) {
         return <Fragment>
